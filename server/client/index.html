@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Vue Project 1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="./bootstrap.min.css"  />
+
+<link type="text/css" rel="stylesheet" href="bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="bootstrap-vue.min.css" />
+
+<!-- Load Vue followed by BootstrapVue -->
+<script src="vue.min.js"></script>
+<script src="bootstrap-vue.min.js"></script>
+
+
+<!-- версия для разработки, отображает полезные предупреждения в консоли -->
+<!--
+<script src="vue.js"></script>
+-->
+<script src="axios.js"></script>
+</head>
+<body>
+    <div id="app" v-bind:title="soso" class="col-md-10">
+        
+        <label>Добавить новую запись:</label>
+        <!--<form action="http://localhost:3000/" method="post">
+            <label>Имя</label><br>
+            <input type="text" name="name" class="form-control"/><br><br>
+            <label>Оператор</label><br>
+            <input type="text" name="operator" class="form-control"/><br><br>
+            <input type="submit" value="Отправить" class="btn btn-primary"/>
+        </form>-->
+        <form @submit="formSubmit">
+            <label>Имя</label><br>
+            <input type="text" name="name" class="form-control" v-model="formName"/><br><br>
+            <label>Оператор</label><br>
+            <input type="text" name="operator" class="form-control" v-model="formOperator"/><br><br>
+            <label>Коментарии</label><br>
+            <input type="text" name="comments" class="form-control" v-model="formComments"/><br><br>
+            <button class="btn btn-primary">Отправить</button>
+        </form>
+        <button class="btn btn-primary" v-on:click="killTheBase">Убить базу</button>
+
+
+        <label>Введите фильтр:</label>
+        <input size="50" type="text" v-model.trim="textSearch" class="form-control"></input>
+        <!--.trim убирает начальные и конечные пробелы.-->
+        
+
+        <div>
+            <b-input-group size="sm" prepend="Оператор" class="mb-2">
+                <b-form-input aria-label="Small text input" v-model="bFormData.provider"></b-form-input>
+            </b-input-group>
+
+            <b-input-group size="sm" prepend="Поставщик" class="mb-2" >
+                <b-form-input aria-label="Small text input" v-model="bFormData.manufacturer"></b-form-input>
+            </b-input-group>
+
+            <b-input-group size="sm" type="number" prepend="Количество испытаний" class="mb-2" >
+                <b-form-input aria-label="Small text input" v-model="bFormData.numberOfTests"></b-form-input>
+            </b-input-group>
+
+            <b-input-group size="sm" prepend="Коментарии" class="mb-2" >
+                <b-form-input aria-label="Small text input" v-model="bFormData.comments"></b-form-input>
+            </b-input-group>
+    
+            <b-input-group size="sm" prepend="Тестовый клиент" class="mb-2" >
+                <b-form-input aria-label="Small text input" v-model="bFormData.remoteControlClient"></b-form-input>
+            </b-input-group>
+    
+            <b-input-group size="sm" prepend="Контакты" class="mb-2" >
+                <b-form-input aria-label="Small text input" v-model="bFormData.contacts"></b-form-input>
+            </b-input-group>  
+                                
+            <b-input-group size="sm" type="number" prepend="Рег. номер" class="mb-2" >
+                <b-form-input aria-label="Small text input" v-model="bFormData.regNumber"></b-form-input>
+            </b-input-group>
+        
+            <b-input-group size="sm" prepend="Критерии" class="mb-2" >
+                <b-form-input aria-label="Small text input" v-model="bFormData.criteria"></b-form-input>
+            </b-input-group>
+        </div>
+
+        <div>
+                <p>{{bFormData}}</p>
+        </div>
+        
+
+        <!--B-table тормозит как кусок Г.
+             <template>
+            <div>
+                <h1>B-Таблица для тестов</h1>
+                <b-table  :items="visibleTable" :fields="fields" :busy="isBusy" :hover="true" :small="true" :striped="true"  >
+                    <template v-slot:table-busy>
+                        <div class="text-center text-danger my-2">
+                            <b-spinner class="align-middle"></b-spinner>
+                            <strong>Loading...</strong>
+                        </div>
+                    </template>
+                    <template v-slot:cell(showDetails)="row">
+                        <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+                            {{ row.detailsShowing ? 'Спрятать' : 'Показать'}} подробности
+                        </b-button>
+                    </template>
+                    <template v-slot:row-details="row">
+                        <b-card>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Поставщик:</b></b-col>
+                                <b-col>{{ row.item.name }}</b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Дата начала испытаний:</b></b-col>
+                                <b-col>{{ row.item.date | subDate }}</b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Количество испытаний:</b></b-col>
+                                <b-col></b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Коментарии:</b></b-col>
+                                <b-col></b-col>
+                            </b-row>
+                                <b-row class="mb-2">
+                                    <b-col sm="3" class="text-sm-right"><b>Тестовый клиент:</b></b-col>
+                                    <b-col></b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Контакты:</b></b-col>
+                                <b-col></b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Рег. номер:</b></b-col>
+                                <b-col></b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Критерии:</b></b-col>
+                                <b-col></b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Дата окончания испытаний:</b></b-col>
+                                <b-col>{{ row.item.dateOfTheEndOfTests | subDate}}</b-col>
+                            </b-row>
+                            <b-row class="mb-2">
+                                <b-col sm="3" class="text-sm-right"><b>Mongo Id:</b></b-col>
+                                <b-col>{{ row.item._id }}</b-col>
+                            </b-row>
+                        </b-card>
+                    </template>
+
+                    <template v-slot:cell(delete)="row">
+                        <b-button size="sm"  @click="deleteAnElement(row.item._id)" class="mr-2">Удалить</b-button>
+                    </template>
+                    <template v-slot:cell(rowNumber)="row">
+                           {{ row.index + 1 }}
+                    </template>
+                    <template v-slot:cell(date)="row">
+                            {{ row.item.date | subDate }}
+                    </template>
+                    <template v-slot:cell(isAccomplished)="row">
+                            <b-button size="sm"  @click="accomplish(row.index)" class="mr-2">Завершить</b-button>
+                    </template>
+                        
+                </b-table>
+            </div>
+        </template> -->
+
+        Таблица рабочая, но b-table круче
+        <h1>Сортируемая таблица</h1>
+        <table border="true" class="table table-bordered fixed table-hover small table-striped table-light">
+            <thead >
+                <th>Номер</th>
+                <th>Оператор</th>
+                <th>Поставщик</th>
+                <th>Дата подключения</th>
+                <th>Количество испытаний</th>
+                <th>Коментарии</th>
+                <th>Тестовый клиент</th>
+                <th>Контакты</th>
+                <th>Рег. номер</th>
+                <th>Критерии</th>
+                <th>Дата окончания испытаний</th>
+                <th>Mongo Id</th>
+                <th>Удалить</th>
+                <th>Завершено</th>
+            </thead>
+            <tbody>
+            <tr v-for="(i, index) in visibleTable">
+                <td>{{index + 1}}</td>
+                <td>{{i.operator}}</td>
+                <td>{{i.name}}</td>
+                <td>{{i.date | subDate}}</td>
+                <td>{{i.testNumber}}</td>
+                <td>{{i.comments}}</td>
+                <td>{{i.testClient}}</td>
+                <td>{{i.operatorContacts}}</td>
+                <td>{{i.regNumber}}</td>
+                <td>{{i.criteria}}</td>
+                <td>{{i.dateOfTheEndOfTests | subDate}}</td>
+                <td>{{i._id}}</td>
+                <td><button v-on:click="deleteAnElement(i._id)">{{i._id}}</a></td>
+                <td>Завершено</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!--<p>info.data: {{ info.data }}</p>
+
+        <p>items: {{ items }}</p>
+-->
+        <!-- <p>secondArray: {{ secondArray }}</p>
+        <button type="button" class="btn btn-primary" v-on:click="isHidden = !isHidden">Show/Hide</button> -->
+        
+        <!-- <h1 v-if="isHidden">Таблица того, что пришло с сервера</h1>
+        <table v-if="isHidden" border="true" class="table table-bordered table-hover table-striped table-light">
+                
+            <thead >
+                <th>Номер</th>
+                <th>Оператор</th>
+                <th>Поставщик</th>
+                <th>Дата подключения</th>
+                <th>Количество испытаний</th>
+                <th>Коментарии</th>
+                <th>Тестовый клиент</th>
+                <th>Контакты</th>
+                <th>Рег. номер</th>
+                <th>Критерии</th>
+                <th>Mongo Id</th>
+                <th>Удалить</th>
+                <th>Завершено</th>
+            </thead>
+            <tbody>
+            <tr v-for="i in info.data">
+                <td>{{i.name}}</td>
+                <td>{{i.operator}}</td>
+                <td>{{i.date}}</td>
+                <td>{{i._id}}</td>
+                <td><button v-on:click="deleteAnElement(i._id)">{{i._id}}</a></td>
+                
+
+            </tr>
+            </tbody>
+        </table> -->
+        
+        
+        
+        
+
+    </div>
+    <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                  //{name: this.formName, operator: this.formOperator, comments: this.formComments} пример того, что нужно слать в базу
+                  bFormData: {provider: '', manufacturer: '', numberOfTests: 0, comments: '', remoteControlClient: '', contacts: '', regNumber: '', criteria: ''},  
+
+                  //isBusy: false,  //не работает. При загрузке таблица красиво грузит итемы
+                  message: 'Привет, Vue!',
+                  vv: 151,
+                  soso: "Real soso!",
+                  status: 1,
+                  list: ['1','2','3'],
+                  //itemS: [{name: 'МФИ', operator: 'equant'},{name: 'ТехАргос', operator: 'nks'},{name: 'Норси', operator: 'megafon'}],
+                  //backupItems: [{name: 'МФИ', operator: 'equant'},{name: 'ТехАргос', operator: 'nks'},{name: 'Норси', operator: 'megafon'}],
+                  textSearch: '',
+                  info: 'axios',
+                  secondArray: [{name: 'secondArray'}],
+                  isHidden: false,
+                  url: 'http://127.0.0.1:3000/api/operators/',
+                  formName: '',
+                  formOperator: '',
+                  formComments: '',
+                  isBusy: true,
+                  items2: [
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' }
+      ],
+      fields2: [{
+        key: 'heading1',
+        sortable: true
+      },
+      {
+        key: 'heading2',
+        sortable: false
+      },
+      {
+        key: 'sisi',
+        sortable: true
+        // Variant applies to the whole column, including the header and footer
+      }],
+
+      fields: [{
+        key: 'rowNumber',
+        label: 'Номер',
+        sortable: false
+      },
+      {
+        key: 'operator',
+        label: 'Оператор',
+        sortable: true
+      },
+      /* {
+        key: 'name',
+        label: 'Поставщик',
+        sortable: true
+        // Variant applies to the whole column, including the header and footer
+      },
+      {
+        key: 'date',
+        label: 'Дата начала испытаний',
+        sortable: true
+      },
+      {
+        key: 'Количество испытаний',
+        sortable: false
+      },
+      {
+        key: 'Коментарии',
+        sortable: true
+        // Variant applies to the whole column, including the header and footer
+        //variant: 'danger'
+      },
+      {
+        key: 'Тестовый клиент',
+        sortable: true
+      },
+      {
+        key: 'Контакты',
+        sortable: false
+      },
+      {
+        key: 'Рег. номер',
+        sortable: true
+        // Variant applies to the whole column, including the header and footer
+        
+      },
+      {
+        key: 'Критерии',
+        sortable: false
+      },
+      {
+        key: 'dateOfTheEndOfTests',
+        label: 'Дата окончания испытаний',
+        sortable: true
+      },
+      {
+        key: '_id',
+        label: 'Mongo Id',
+        sortable: true
+      }, */
+      
+      {
+        key: 'showDetails',
+        label: 'Подробности',
+        sortable: false
+      },
+      
+      {
+        key: 'delete',
+        label: 'Удалить',
+        sortable: false
+      },
+      {
+        key: "isAccomplished",
+        label: 'Завершено',
+        sortable: false,
+      }],
+                  //index: 1
+                  
+
+                },
+                filters:
+                {
+                    subDate: function(value)
+                    {   
+                        if (!value) return '';
+                        value = value.substring(0, 10) + " " + value.substring(11, 19);
+                        return value;
+                    }
+                },
+                /*watch:{
+                    /*
+                    textSearch: function() {
+                        
+                        var result = []
+
+                        for (var i = 0; i <this.backupItems.length; i++)
+                        {
+                            //console.log(i+' - '+this.items[i].name)
+                            if (this.backupItems[i].name.toLowerCase().includes(this.textSearch.toLowerCase()) || this.backupItems[i].operator.toLowerCase().includes(this.textSearch.toLowerCase()))
+                            {
+                            result.push(this.backupItems[i])
+                            }
+                        }
+                        this.items = result
+                    
+
+
+                        //this.items = this.items.filter(function (item) {
+  //return item.name.match(this.textSearch)
+//})
+                        
+
+                    }
+
+                    
+
+                },*/
+                computed:{
+                    //async sleep(ms)   //Что-то он эту функцию не видит нифига
+                    //{
+                    //    return new Promise(resolve => setTimeout(resolve, ms));
+                    //},
+                    //Фильруем таблицу
+                    //И тут я нашел как все сделать красиво: transion vuejs. Доделать!
+
+                    visibleTable: function()
+                    {
+                        //await new Promise(resolve => setTimeout(resolve, 2000)); //Vue не знает async? 
+                        //await sleep(2000);
+                        console.log('Started computed section filtering');
+                        let filterString = this.textSearch.toLowerCase();
+                        //console.log(`copm - поле поиск ${copm}`);
+                        //return this.secondArray;
+                        return this.secondArray.filter(
+                        elem => elem.name.toLowerCase().includes(filterString)||
+                        elem.operator.toLowerCase().includes(filterString))
+                    }
+                },
+                //Первоначальная загрузка данных.
+                mounted() {
+                    axios
+                        .get('http://localhost:3000/api/operators')
+                        .then(response => {this.info = response;
+                            this.secondArray = this.info.data;
+                            this.isBusy = false;
+                            console.log('Initial data load');})
+                        .catch(error => console.log(error));
+                        
+                },
+
+
+
+
+                methods: {
+                    
+                    async sleep(ms)   //Что-то он эту функцию не видит нифига
+                    {
+                        return new Promise(resolve => setTimeout(resolve, ms));
+                    },
+
+                    accomplish(id)
+                    {
+                        this.secondArray[id]._rowVariant = 'danger';
+                        //Мне кажется, что тут могут быть косяки при удалении некоторых элементов. Что тогда будет с индексами строк?
+                        //Может лучше передавать mongoId:
+
+                        //for (let i = 0; i < this.secondArray.length; i++)
+                        //{
+                          //  if (this.secondArray[i]["_id"] === mongoId)
+                            //{
+                              //  this.secondArray[i]._rowVariant = 'danger';
+                                //console.log('found: ', this.secondArray[i]["_id"], mongoId, i);
+                            //}
+                        //}
+                        //let foundIndex = this.secondArray.findIndex(x => {x["_id"].includes('5de') }); //Вот тут добить нужно
+                        //console.log('found index: ', foundIndex );
+                        //this.secondArray[foundIndex]._rowVariant = 'danger';
+
+                    },
+
+                    
+                    toggleBusy() 
+                    {
+                        this.isBusy = !this.isBusy
+                    },
+
+                    killTheBase()
+                    {
+                        //Заливаем в базу сразу 100 записей
+                        const func = async () => {const response = await axios.post('http://localhost:3000/', {name: 'Kill', operator: 'Base'});}
+                        for (let i = 0; i < 100; i++)
+                        {
+                            func();
+                        }
+
+                    },
+                    
+
+                    async deleteAnElement(id){
+                        //Удаляем документ из базы:
+                        axios
+                        .delete('http://localhost:3000/api/operators/'+id) //шлем элемент на удаление по Mongo Id
+                        .then(response => {console.log(response)})
+                        .catch(error => console.log(error));
+
+                        //await new Promise(resolve => setTimeout(resolve, 2000)); //Вот тут работает
+                        //await sleep(2000);
+
+                        //И сразу запрос в базу для обновления таблицы
+                        axios
+                        .get('http://localhost:3000/api/operators')
+                        .then(response => {this.info = response;
+                            this.secondArray = this.info.data;
+                            console.log("get after deleting");
+                        })
+                        .catch(error => console.log(error));
+                    },
+
+                    formSubmit(e)
+                    {
+                        //Залили новый документ через форму в базу:
+                        e.preventDefault();
+                        axios
+                        .post('http://localhost:3000/', {name: this.formName, operator: this.formOperator, comments: this.formComments})
+                        .then(response => {console.log(response.data);})
+                        .catch(error => console.log(error))
+
+                        //И сразу запрос в базу для обновления таблицы
+                        axios
+                        .get('http://localhost:3000/api/operators')
+                        .then(response => {this.info = response;
+                            this.secondArray = this.info.data;
+                            console.log("get after post");
+                        })
+                        .catch(error => console.log(error));
+                    }                    
+
+
+
+                }
+              })
+    </script>
+
+
+</body>
+
+
+
+
+
+</html>

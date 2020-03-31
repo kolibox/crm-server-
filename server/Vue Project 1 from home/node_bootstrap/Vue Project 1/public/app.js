@@ -1,0 +1,51 @@
+var app = new Vue({
+    el: '#app',
+    data: {
+      message: 'Hello Vue!',
+      items: [
+        { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+          { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+          { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
+          { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' }
+      ],
+      fields: [{
+        key: 'last_name',
+        sortable: true
+      },
+      {
+        key: 'first_name',
+        sortable: false
+      },
+      {
+        key: 'age',
+        label: 'Person age',
+        sortable: true,
+        // Variant applies to the whole column, including the header and footer
+        variant: 'danger'
+      }],
+      isBusy: false,
+      items2: [
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' },
+        { heading1: 'table cell', heading2: 'table cell', heading3: 'table cell' }
+      ],
+      
+      
+    },
+    methods: {
+      toggleBusy() {
+        this.isBusy = !this.isBusy
+      }
+    }
+  })
+
+

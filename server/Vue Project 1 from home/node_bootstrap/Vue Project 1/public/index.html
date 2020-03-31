@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<!-- Add this to <head> -->
+
+<!-- Load required Bootstrap and BootstrapVue CSS -->
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+<!-- Load polyfills to support older browsers -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+
+<!-- Load Vue followed by BootstrapVue -->
+<script src="https://unpkg.com/vue@latest/dist/vue.min.js"></script>
+<script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+    
+</head>
+
+<body>
+
+<div id="app">
+    {{ message }}
+    <template>
+            <div>
+              <b-button @click="toggleBusy">Toggle Busy State</b-button>
+          
+              <b-table :fields="fields" :items="items" :busy="isBusy" class="mt-3" outlined>
+                <template v-slot:table-busy>
+                  <div class="text-center text-danger my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong>Loading...</strong>
+                  </div>
+                </template>
+              </b-table>
+            </div>
+          </template>
+
+
+
+          <template>
+                <div>
+                  <b-table sticky-header :items="items2" head-variant="light"></b-table>
+                </div>
+              </template>
+
+
+
+
+              
+</div>
+
+
+
+
+
+<script type="module" src="app.js"></script>
+</body>
+
+</html>
